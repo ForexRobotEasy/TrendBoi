@@ -1,0 +1,109 @@
+mql5
+//+------------------------------------------------------------------+
+//|                                           TrendBoi.mq5            |
+//|                       Copyright 2022, Forex Robot Easy Team        |
+//|                                       https://forexroboteasy.com   |
+//+------------------------------------------------------------------+
+#property copyright 'Copyright 2022, Forex Robot Easy Team'
+#property link      'https://forexroboteasy.com'
+#property version   '1.00'
+#property strict
+
+// Global variables
+input double LotSize = 0.1; // Default lot size
+input double Threshold = 1000.0; // Equity threshold
+
+//+------------------------------------------------------------------+
+//| Expert initialization function                                   |
+//+------------------------------------------------------------------+
+int OnInit()
+{
+    // Set the initial equity threshold
+    AccountInfoDouble(ACCOUNT_EQUITY_MARGIN) = Threshold;
+    
+    return(INIT_SUCCEEDED);
+}
+
+//+------------------------------------------------------------------+
+//| Expert deinitialization function                                 |
+//+------------------------------------------------------------------+
+void OnDeinit(const int reason)
+{
+    // Cleanup code if required
+}
+
+//+------------------------------------------------------------------+
+//| Expert start function                                            |
+//+------------------------------------------------------------------+
+void OnTick()
+{
+    // Check if a trade has already been placed today
+    if (!IsTradePlacedToday())
+    {
+        // Analyze the market direction
+        int marketDirection = AnalyzeMarketDirection();
+        
+        // Check if there is a valid market direction
+        if (marketDirection != 0)
+        {
+            // Place a trade based on the market direction
+            PlaceTrade(marketDirection);
+        }
+    }
+}
+
+//+------------------------------------------------------------------+
+//| Function to check if a trade has already been placed today        |
+//+------------------------------------------------------------------+
+bool IsTradePlacedToday()
+{
+    // Get the current date and time
+    datetime currentTime = TimeCurrent();
+    
+    // Get the date and time of the last trade
+    datetime lastTradeTime = Time[OrdersTotal() - 1];
+    
+    // Check if the last trade was placed today
+    if (TimeDay(currentTime) == TimeDay(lastTradeTime))
+    {
+        return true;
+    }
+    
+    return false;
+}
+
+//+------------------------------------------------------------------+
+//| Function to analyze the market direction                          |
+//+------------------------------------------------------------------+
+int AnalyzeMarketDirection()
+{
+    // Implement your market direction analysis logic here
+    
+    // Return 1 if market is bullish, -1 if market is bearish, and 0 if no valid market direction is found
+    return 0;
+}
+
+//+------------------------------------------------------------------+
+//| Function to place a trade based on the market direction           |
+//+------------------------------------------------------------------+
+void PlaceTrade(const int marketDirection)
+{
+    // Implement your trade placement logic here
+    
+    // Place the trade using the specified lot size
+    OrderSend(Symbol(), OP_BUY, LotSize, Ask, 0, 0, 0, 'TrendBoi', MagicNumber(), 0, CLR_NONE);
+}
+
+//+------------------------------------------------------------------+
+//| Function to get the magic number for the expert advisor           |
+//+------------------------------------------------------------------+
+int MagicNumber()
+{
+    // Generate a unique magic number based on the expert advisor name and symbol
+    string magicNumberString = 'TrendBoi_' + Symbol();
+    
+    // Convert the magic number string to an integer
+    int magicNumber = StringToInteger(magicNumberString, 10);
+    
+    return magicNumber;
+}
